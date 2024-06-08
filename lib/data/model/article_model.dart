@@ -1,11 +1,11 @@
 class ArticleModel {
-  final String author;
-  final String title;
-  final String description;
-  final String url;
-  final String urlToImage;
-  final String publishedAt;
-  final String content;
+  final String? author;
+  final String? title;
+  final String? description;
+  final String? url;
+  final String? urlToImage;
+  final String? publishedAt;
+  final String? content;
 
   ArticleModel({
     required this.author,
@@ -27,5 +27,10 @@ class ArticleModel {
       publishedAt: json['publishedAt'],
       content: json['content'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'ArticleModel{title: $title}';
   }
 }

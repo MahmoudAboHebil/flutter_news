@@ -1,6 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news/helper/data.dart';
+import 'package:flutter_news/logic/article_bloc/article_bloc.dart';
+import 'package:flutter_news/logic/article_bloc/article_states.dart';
 
 import '../data/model/category_model.dart';
 
@@ -36,26 +41,61 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         elevation: 0.0,
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              height: 60,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              width: double.infinity,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: categoryData.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return CategoryTile(
-                    title: categoryData[index].categoryTitle,
-                    imageUrl: categoryData[index].categoryUrl,
-                  );
-                },
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              //category
+              Container(
+                height: 60,
+                width: double.infinity,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: categoryData.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return CategoryTile(
+                      title: categoryData[index].categoryTitle,
+                      imageUrl: categoryData[index].categoryUrl,
+                    );
+                  },
+                ),
               ),
-            )
-          ],
+              SizedBox(
+                height: 26,
+              ),
+              //blog
+              Container(
+                child: BlocBuilder(
+                  bloc: BlocProvider.of<ArticleBloc>(context),
+                  builder: (context, state) {
+                    if (state is LoadedArtState) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: state.articles.length,
+                        itemBuilder: (context, index) {
+                          return BlogTile(
+                              title: state.articles[index].title!,
+                              imageUrl: state.articles[index].urlToImage!,
+                              desc: state.articles[index].description!);
+                        },
+                      );
+                    } else if (state is ErrorArtState) {
+                      return Center(
+                        child: Text(
+                          'Ops!, There is an Error',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+                    return Center(child: CircularProgressIndicator());
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -65,6 +105,7 @@ class _HomePageState extends State<HomePage> {
 class CategoryTile extends StatelessWidget {
   final String imageUrl;
   final String title;
+
   const CategoryTile({super.key, required this.title, required this.imageUrl});
 
   @override
@@ -77,8 +118,8 @@ class CategoryTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: 120,
                 height: 60,
                 fit: BoxFit.cover,
@@ -102,6 +143,50 @@ class CategoryTile extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class BlogTile extends StatelessWidget {
+  final String imageUrl, title, desc;
+
+  BlogTile({
+    super.key,
+    required this.title,
+    required this.imageUrl,
+    required this.desc,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.network(imageUrl),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+                fontWeight: FontWeight.w500),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            desc,
+            style: TextStyle(
+              color: Colors.black54,
+            ),
+          ),
+        ],
       ),
     );
   }

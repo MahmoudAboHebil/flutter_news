@@ -11,7 +11,13 @@ class ArticleRepo {
     try {
       final response = await artService.getArticles();
       final List result = jsonDecode(response)['articles'];
-      return result.map((e) => ArticleModel.fromJson(e)).toList();
+      List<ArticleModel> arts = result
+          .where((e) => e['author'] != null && e['urlToImage'] != null)
+          .map((e) {
+        return ArticleModel.fromJson(e);
+      }).toList();
+
+      return arts;
     } catch (e) {
       throw Exception(e.toString());
     }
