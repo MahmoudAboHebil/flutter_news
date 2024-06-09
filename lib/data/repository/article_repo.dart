@@ -22,4 +22,20 @@ class ArticleRepo {
       throw Exception(e.toString());
     }
   }
+
+  Future<List<ArticleModel>> getCateArticles(String category) async {
+    try {
+      final response = await artService.getCateArticles(category);
+      final List result = jsonDecode(response)['articles'];
+      List<ArticleModel> arts = result
+          .where((e) => e['author'] != null && e['urlToImage'] != null)
+          .map((e) {
+        return ArticleModel.fromJson(e);
+      }).toList();
+
+      return arts;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
