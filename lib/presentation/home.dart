@@ -78,9 +78,11 @@ class _HomePageState extends State<HomePage> {
                         itemCount: state.articles.length,
                         itemBuilder: (context, index) {
                           return BlogTile(
-                              title: state.articles[index].title!,
-                              imageUrl: state.articles[index].urlToImage!,
-                              desc: state.articles[index].description!);
+                            title: state.articles[index].title!,
+                            imageUrl: state.articles[index].urlToImage!,
+                            desc: state.articles[index].description!,
+                            blocUrl: state.articles[index].url!,
+                          );
                         },
                       );
                     } else if (state is ErrorArtState) {

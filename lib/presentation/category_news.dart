@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news/logic/cate_article_bloc/cate_article_bloc.dart';
@@ -27,6 +28,15 @@ class _CategoryNewsState extends State<CategoryNews> {
             ),
           ],
         ),
+        actions: [
+          Opacity(
+            opacity: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Icon(Icons.add),
+            ),
+          )
+        ],
         centerTitle: true,
         elevation: 0.0,
       ),
@@ -47,9 +57,11 @@ class _CategoryNewsState extends State<CategoryNews> {
                         itemCount: state.articles.length,
                         itemBuilder: (context, index) {
                           return BlogTile(
-                              title: state.articles[index].title!,
-                              imageUrl: state.articles[index].urlToImage!,
-                              desc: state.articles[index].description!);
+                            title: state.articles[index].title!,
+                            imageUrl: state.articles[index].urlToImage!,
+                            desc: state.articles[index].description!,
+                            blocUrl: state.articles[index].url!,
+                          );
                         },
                       );
                     } else if (state is ErrorCateArtState) {
@@ -60,7 +72,13 @@ class _CategoryNewsState extends State<CategoryNews> {
                         ),
                       );
                     }
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height / 2),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                   },
                 ),
               )
