@@ -10,11 +10,31 @@ class LoadingArtState extends ArticleState {
   List<Object> get props => [];
 }
 
+class InitArtState extends ArticleState {
+  @override
+  List<Object> get props => [];
+}
+
 class LoadedArtState extends ArticleState {
   List<ArticleModel> articles;
-  LoadedArtState({required this.articles});
+  final bool hasReachedMax;
+  final bool isFetching;
+  LoadedArtState(
+      {required this.articles,
+      required this.hasReachedMax,
+      required this.isFetching});
+
+  LoadedArtState copyWith(
+      {List<ArticleModel>? articles, bool? hasReachedMax, bool? isFetching}) {
+    return LoadedArtState(
+      isFetching: isFetching ?? this.isFetching,
+      articles: articles ?? this.articles,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+    );
+  }
+
   @override
-  List<Object> get props => [articles];
+  List<Object> get props => [articles, hasReachedMax, isFetching];
 }
 
 class ErrorArtState extends ArticleState {
