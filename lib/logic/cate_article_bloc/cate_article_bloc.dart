@@ -40,7 +40,6 @@ class CateArticleBloc extends Bloc<CateArticleEvent, CateArticleState> {
           } else if (currentState is LoadedCateArtState &&
               currentState.cateTitle != event.cateName) {
             pageNum = 1;
-            emit(currentState.copyWith(isFetching: true));
             List<ArticleModel> list =
                 await articleRepo.getCateArticles(event.cateName, pageNum);
             emit(LoadedCateArtState(
@@ -53,7 +52,6 @@ class CateArticleBloc extends Bloc<CateArticleEvent, CateArticleState> {
         } else if (currentState is LoadedCateArtState &&
             currentState.cateTitle != event.cateName) {
           pageNum = 1;
-          emit(currentState.copyWith(isFetching: true));
           List<ArticleModel> list =
               await articleRepo.getCateArticles(event.cateName, pageNum);
           emit(LoadedCateArtState(
