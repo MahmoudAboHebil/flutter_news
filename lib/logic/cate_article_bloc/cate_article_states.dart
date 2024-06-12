@@ -14,21 +14,28 @@ class LoadedCateArtState extends CateArticleState {
   final List<ArticleModel> articles;
   final bool hasReachedMax;
   final bool isFetching;
-  LoadedCateArtState(
-      {required this.articles,
-      required this.hasReachedMax,
-      required this.isFetching});
+  final String cateTitle;
+  LoadedCateArtState({
+    required this.articles,
+    required this.hasReachedMax,
+    required this.isFetching,
+    required this.cateTitle,
+  });
   LoadedCateArtState copyWith(
-      {List<ArticleModel>? articles, bool? hasReachedMax, bool? isFetching}) {
+      {List<ArticleModel>? articles,
+      bool? hasReachedMax,
+      bool? isFetching,
+      String? cateTitle}) {
     return LoadedCateArtState(
       articles: articles ?? this.articles,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isFetching: isFetching ?? this.isFetching,
+      cateTitle: cateTitle ?? this.cateTitle,
     );
   }
 
   @override
-  List<Object> get props => [articles, hasReachedMax, isFetching];
+  List<Object> get props => [articles, hasReachedMax, isFetching, cateTitle];
 }
 
 class ErrorCateArtState extends CateArticleState {

@@ -17,13 +17,14 @@ class CateArticleBloc extends Bloc<CateArticleEvent, CateArticleState> {
           if (currentState is InitCateArtState) {
             List<ArticleModel> list =
                 await articleRepo.getCateArticles(event.cateName, pageNum);
-            if (list.isEmpty) {}
             emit(LoadedCateArtState(
                 articles: list,
                 hasReachedMax: list.length < ArticleService.pageSize,
-                isFetching: false));
+                isFetching: false,
+                cateTitle: event.cateName));
             pageNum++;
-          } else if (currentState is LoadedCateArtState) {
+          } else if (currentState is LoadedCateArtState &&
+              currentState.cateTitle == event.cateName) {
             emit(currentState.copyWith(isFetching: true));
             await Future.delayed(Duration(seconds: 1));
             List<ArticleModel> list =
@@ -34,11 +35,37 @@ class CateArticleBloc extends Bloc<CateArticleEvent, CateArticleState> {
                     articles: list + currentState.articles,
                     hasReachedMax: list.length < ArticleService.pageSize,
                     isFetching: false,
-                  ));
+                    cateTitle: event.cateName));
+            pageNum++;
+          } else if (currentState is LoadedCateArtState &&
+              currentState.cateTitle != event.cateName) {
+            pageNum = 1;
+            emit(currentState.copyWith(isFetching: true));
+            List<ArticleModel> list =
+                await articleRepo.getCateArticles(event.cateName, pageNum);
+            emit(LoadedCateArtState(
+                articles: list,
+                hasReachedMax: list.length < ArticleService.pageSize,
+                isFetching: false,
+                cateTitle: event.cateName));
             pageNum++;
           }
+        } else if (currentState is LoadedCateArtState &&
+            currentState.cateTitle != event.cateName) {
+          pageNum = 1;
+          emit(currentState.copyWith(isFetching: true));
+          List<ArticleModel> list =
+              await articleRepo.getCateArticles(event.cateName, pageNum);
+          emit(LoadedCateArtState(
+              articles: list,
+              hasReachedMax: list.length < ArticleService.pageSize,
+              isFetching: false,
+              cateTitle: event.cateName));
+          pageNum++;
         }
       } catch (e) {
+        // print('objectobjectobjectobject');
+        // print(e.toString());
         if (e.toString().contains('response code is 426')) {
           if (currentState is LoadedCateArtState) {
             emit(currentState.copyWith(isFetching: false, hasReachedMax: true));
@@ -56,6 +83,5 @@ class CateArticleBloc extends Bloc<CateArticleEvent, CateArticleState> {
   @override
   void onChange(Change<CateArticleState> change) {
     super.onChange(change);
-    print(change.toString());
   }
 }
