@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news/logic/cate_article_bloc/cate_article_bloc.dart';
 import 'package:flutter_news/logic/cate_article_bloc/cate_article_events.dart';
@@ -17,11 +18,13 @@ class CategoryNews extends StatefulWidget {
 
 class _CategoryNewsState extends State<CategoryNews> {
   final ScrollController _scrollController = ScrollController();
+  bool showButton = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _scrollController.addListener(_onScrollDirection);
   }
 
   void _onScroll() {
@@ -40,8 +43,27 @@ class _CategoryNewsState extends State<CategoryNews> {
     );
   }
 
+  void _onScrollDirection() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      //Scrolling down
+      setState(() {
+        showButton = false;
+      });
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      //Scrolling up
+
+      setState(() {
+        showButton = true;
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.removeListener(_onScrollDirection);
     _scrollController.dispose();
     super.dispose();
   }
@@ -49,6 +71,21 @@ class _CategoryNewsState extends State<CategoryNews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: AnimatedOpacity(
+        opacity: showButton ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 300),
+        child: FloatingActionButton(
+          onPressed: () {
+            _scrollToTop();
+          },
+          backgroundColor: Colors.blue,
+          child: Icon(
+            Icons.keyboard_arrow_up,
+            size: 30,
+            color: Colors.white,
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,

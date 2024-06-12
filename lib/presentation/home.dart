@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news/logic/article_bloc/article_bloc.dart';
@@ -21,12 +22,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<CategoryModel> categoryData = [];
   final ScrollController _scrollController = ScrollController();
+  bool showButton = false;
 
   @override
   void initState() {
     super.initState();
     categoryData = getCategories();
     _scrollController.addListener(_onScroll);
+    _scrollController.addListener(_onScrollDirection);
   }
 
   void _onScroll() {
@@ -43,8 +46,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _onScrollDirection() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      //Scrolling down
+      setState(() {
+        showButton = false;
+      });
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      //Scrolling up
+
+      setState(() {
+        showButton = true;
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.removeListener(_onScrollDirection);
     _scrollController.dispose();
     super.dispose();
   }
@@ -52,15 +74,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _scrollToTop();
-        },
-        backgroundColor: Colors.blue,
-        child: Icon(
-          Icons.keyboard_arrow_up,
-          size: 30,
-          color: Colors.white,
+      floatingActionButton: AnimatedOpacity(
+        opacity: showButton ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 300),
+        child: FloatingActionButton(
+          onPressed: () {
+            _scrollToTop();
+          },
+          backgroundColor: Colors.blue,
+          child: Icon(
+            Icons.keyboard_arrow_up,
+            size: 30,
+            color: Colors.white,
+          ),
         ),
       ),
       appBar: AppBar(
