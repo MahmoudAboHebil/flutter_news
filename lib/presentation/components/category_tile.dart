@@ -20,7 +20,9 @@ class CategoryTile extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CategoryNews(),
+              builder: (context) => CategoryNews(
+                cateName: title.toLowerCase(),
+              ),
             ));
       },
       child: Container(

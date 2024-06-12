@@ -7,9 +7,9 @@ import '../model/article_model.dart';
 class ArticleRepo {
   final ArticleService artService = ArticleService();
 
-  Future<List<ArticleModel>> getArticles(int pageNum) async {
+  Future<List<ArticleModel>> getArticles(int pageNum, int? tempSize) async {
     try {
-      final response = await artService.getArticles(pageNum);
+      final response = await artService.getArticles(pageNum, tempSize);
       final List result = jsonDecode(response)['articles'];
       List<ArticleModel> arts = result.map((e) {
         return ArticleModel.fromJson(e);
@@ -21,13 +21,14 @@ class ArticleRepo {
     }
   }
 
-  Future<List<ArticleModel>> getCateArticles(String category) async {
+  Future<List<ArticleModel>> getCateArticles(
+    String category,
+    int pageNumber,
+  ) async {
     try {
-      final response = await artService.getCateArticles(category);
+      final response = await artService.getCateArticles(category, pageNumber);
       final List result = jsonDecode(response)['articles'];
-      List<ArticleModel> arts = result
-          .where((e) => e['author'] != null && e['urlToImage'] != null)
-          .map((e) {
+      List<ArticleModel> arts = result.map((e) {
         return ArticleModel.fromJson(e);
       }).toList();
 

@@ -8,10 +8,11 @@ class ArticleService {
   final String urlCateArticles =
       'https://newsapi.org/v2/top-headlines?country=us';
   final String apiKey = '0938edb43c304fcdbec275313a280302';
-  static const int pageSize = 20;
+  static const int pageSize = 30;
 
-  Future<String> getArticles(int pageNum) async {
-    String endPoint = '$url$apiKey&pageSize=$pageSize&page=$pageNum';
+  Future<String> getArticles(int pageNum, int? tempSize) async {
+    String endPoint =
+        '$url$apiKey&pageSize=${tempSize ?? pageSize}&page=$pageNum';
     Response response = await get(Uri.parse(endPoint));
     if (response.statusCode != 200) {
       throw Exception('getArticles response code is ${response.statusCode}');
@@ -19,8 +20,9 @@ class ArticleService {
     return response.body;
   }
 
-  Future<String> getCateArticles(String category) async {
-    String endPoint = '$urlCateArticles&category=$category&apiKey=$apiKey';
+  Future<String> getCateArticles(String category, int pageNum) async {
+    String endPoint =
+        '$urlCateArticles&category=$category&apiKey=$apiKey&pageSize=$pageSize&page=$pageNum';
     Response response = await get(Uri.parse(endPoint));
     if (response.statusCode != 200) {
       throw Exception('getArticles response code is ${response.statusCode}');

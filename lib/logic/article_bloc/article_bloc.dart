@@ -15,7 +15,11 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       try {
         if (!_hasReachedMax(currentState)) {
           if (currentState is InitArtState) {
-            List<ArticleModel> articles = await articleRepo.getArticles(page);
+            List<ArticleModel> articles =
+                await articleRepo.getArticles(page, null);
+            if (articles.isEmpty) {
+              articles = await articleRepo.getArticles(page, 30);
+            }
             emit(LoadedArtState(
                 articles: articles,
                 hasReachedMax: articles.length < ArticleService.pageSize,
@@ -23,11 +27,12 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
             page++;
           } else if (currentState is LoadedArtState) {
             emit(currentState.copyWith(isFetching: true));
-            await Future.delayed(Duration(seconds: 2));
-            List<ArticleModel> articles = await articleRepo.getArticles(page);
+            await Future.delayed(Duration(seconds: 1));
+            List<ArticleModel> articles =
+                await articleRepo.getArticles(page, null);
 
             emit(articles.isEmpty
-                ? currentState.copyWith(hasReachedMax: true)
+                ? currentState.copyWith(hasReachedMax: true, isFetching: false)
                 : LoadedArtState(
                     articles: articles + currentState.articles,
                     hasReachedMax: articles.length < ArticleService.pageSize,

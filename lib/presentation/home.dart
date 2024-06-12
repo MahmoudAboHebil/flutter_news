@@ -30,19 +30,39 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    // if (_scrollController.position.pixels ==
-    //     _scrollController.position.maxScrollExtent) {
-    //   context.read<ArticleBloc>().add(LoadArtsEvent());
-    // }
     if (_scrollController.position.extentAfter < 300) {
-      print('objectobject');
       context.read<ArticleBloc>().add(LoadArtsEvent());
     }
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _scrollToTop();
+        },
+        backgroundColor: Colors.blue,
+        child: Icon(
+          Icons.keyboard_arrow_up,
+          size: 30,
+          color: Colors.white,
+        ),
+      ),
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -130,8 +150,6 @@ class _HomePageState extends State<HomePage> {
                         ],
                       );
                     } else if (state is ErrorArtState) {
-                      print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-                      print(state.msg);
                       return Center(
                         child: Text(
                           'Ops!, There is an Error',
